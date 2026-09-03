@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>House of ThunderSoul — Election 2026</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;500;600;700;800&display=swap');
+
+  :root{
+    --matte-black:#08090b;
+    --storm-grey:#1a1d22;
+    --storm-grey-light:#262a31;
+    --electric-blue:#00AEEF;
+    --electric-blue-dim:#0086b8;
+    --white:#f5f7fa;
+    --silver:#c7ced8;
+    --glow: 0 0 24px rgba(0,174,239,0.35);
+    --danger:#ff5c6c;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--matte-black);
+    color:var(--white);
+    font-family:'Montserrat',sans-serif;
+    min-height:100vh;
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  /* ---------- ATMOSPHERE ---------- */
+  #atmosphere{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0,174,239,0.14), transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 100%, rgba(0,174,239,0.08), transparent 60%),
+      linear-gradient(180deg, #0b0d10 0%, #08090b 60%, #060708 100%);
+  }
+  canvas#fx{position:fixed; inset:0; z-index:1; pointer-events:none;}
+  #flash{
+    position:fixed; inset:0; z-index:2; pointer-events:none;
+    background:#eaf7ff; opacity:0; mix-blend-mode:screen;
+  }
+
+  .stage{
+    position:relative; z-index:3;
+    min-height:100vh;
+    display:flex; flex-direction:column; align-items:center;
+    padding:48px 20px 64px;
+  }
+
+  /* ---------- HEADER ---------- */
+  .brandmark{
+    display:flex; flex-direction:column; align-items:center;
+    text-align:center; margin-bottom:28px;
+  }
+  .logo-ring{
+    width:84px; height:84px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    background:radial-gradient(circle at 50% 40%, rgba(0,174,239,0.18), rgba(0,0,0,0));
+    border:1px solid rgba(0,174,239,0.35);
+    box-shadow:var(--glow);
+    margin-bottom:16px;
+    overflow:hidden;
+  }
+  .logo-ring img{width:100%; height:100%; object-fit:cover; border-radius:50%;}
+  .logo-ring svg{width:44px; height:44px;}
+  .eyebrow{
+    font-size:12px; letter-spacing:4px; color:var(--electric-blue);
+    font-weight:700; margin-bottom:10px;
+  }
+  .house-name{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:clamp(34px,7vw,52px);
+    letter-spacing:2px; line-height:1; color:var(--white);
+    text-shadow:0 0 30px rgba(0,174,239,0.25);
+  }
+  .election-name{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:clamp(16px,3.2vw,20px);
+    letter-spacing:3px; color:var(--silver);
+    margin-top:8px;
+  }
+  .tagline{
+    margin-top:18px; color:var(--silver); font-size:14px;
+    font-style:italic; opacity:0.85;
+  }
+
+  /* ---------- PROGRESS ---------- */
+  .progress{
+    display:flex; align-items:center; gap:10px;
+    margin:28px 0 8px; font-family:'Montserrat',sans-serif;
+    font-size:11px; letter-spacing:2px; color:var(--silver);
+  }
+  .progress .step{display:flex; align-items:center; gap:8px; opacity:0.45;}
+  .progress .step.active{opacity:1; color:var(--electric-blue);}
+  .progress .num{
+    width:20px; height:20px; border-radius:50%;
+    border:1px solid currentColor; display:flex; align-items:center; justify-content:center;
+    font-size:10px;
+  }
+  .progress .sep{width:24px; height:1px; background:rgba(255,255,255,0.2);}
+
+  /* ---------- CARD ---------- */
+  .panel{
+    width:100%; max-width:480px;
+    background:linear-gradient(180deg, rgba(26,29,34,0.9), rgba(15,17,20,0.9));
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:18px;
+    padding:32px 28px;
+    backdrop-filter:blur(6px);
+    box-shadow:0 20px 60px rgba(0,0,0,0.5);
+    animation:rise 0.5s ease;
+  }
+  @keyframes rise{from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);}}
+
+  .panel h2{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:26px; letter-spacing:1px; margin:0 0 6px;
+  }
+  .panel p.sub{color:var(--silver); font-size:14px; margin:0 0 24px; line-height:1.5;}
+
+  label{
+    display:block; font-size:12px; letter-spacing:1px; color:var(--silver);
+    margin-bottom:8px; font-weight:600;
+  }
+  input[type=email], input[type=text]{
+    width:100%; padding:14px 16px; font-size:16px;
+    background:rgba(255,255,255,0.04);
+    border:1px solid rgba(255,255,255,0.14);
+    border-radius:10px; color:var(--white);
+    font-family:'Montserrat',sans-serif;
+    transition:border-color .2s, box-shadow .2s;
+  }
+  input::placeholder{color:#6a707c;}
+  input:focus{
+    outline:none; border-color:var(--electric-blue);
+    box-shadow:0 0 0 3px rgba(0,174,239,0.2);
+  }
+  input.otp-input{letter-spacing:10px; text-align:center; font-size:22px; font-weight:700;}
+
+  .btn{
+    width:100%; padding:16px 20px; margin-top:18px;
+    background:var(--electric-blue); color:#04121a;
+    border:none; border-radius:10px; cursor:pointer;
+    font-family:'Montserrat',sans-serif; font-weight:800;
+    font-size:14px; letter-spacing:1.5px;
+    transition:transform .15s, box-shadow .15s, background .15s, opacity .15s;
+  }
+  .btn:hover:not(:disabled){box-shadow:0 0 24px rgba(0,174,239,0.5); transform:translateY(-1px);}
+  .btn:active:not(:disabled){transform:translateY(0);}
+  .btn:disabled{opacity:0.5; cursor:not-allowed;}
+  .btn.secondary{
+    background:transparent; color:var(--white);
+    border:1px solid rgba(255,255,255,0.25);
+  }
+  .btn.secondary:hover:not(:disabled){border-color:var(--electric-blue); box-shadow:none;}
+  .btn.ghost{
+    background:transparent; color:var(--electric-blue);
+    border:none; padding:8px; margin-top:10px; font-size:12px;
+    text-decoration:underline; letter-spacing:1px;
+  }
+  .btn-row{display:flex; gap:12px;}
+  .btn-row .btn{margin-top:18px;}
+
+  .helper-row{
+    display:flex; justify-content:space-between; align-items:center;
+    margin-top:14px; font-size:12px; color:var(--silver);
+  }
+
+  .msg{
+    margin-top:16px; padding:12px 14px; border-radius:10px;
+    font-size:13px; line-height:1.5; display:none;
+  }
+  .msg.error{display:block; background:rgba(255,92,108,0.12); border:1px solid rgba(255,92,108,0.35); color:#ffb3ba;}
+  .msg.info{display:block; background:rgba(0,174,239,0.1); border:1px solid rgba(0,174,239,0.3); color:#bfe9fb;}
+
+  .spinner{
+    width:16px; height:16px; border-radius:50%;
+    border:2px solid rgba(4,18,26,0.3); border-top-color:#04121a;
+    display:inline-block; vertical-align:middle; margin-right:8px;
+    animation:spin .7s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  /* ---------- CANDIDATES ---------- */
+  .welcome-line{
+    text-align:center; margin-bottom:20px;
+  }
+  .welcome-line h2{font-size:22px;}
+  .welcome-line p{color:var(--silver); font-size:14px; margin:4px 0 0;}
+
+  .candidates{
+    display:flex; flex-direction:column; gap:16px; width:100%; max-width:480px;
+  }
+  .candidate-card{
+    background:linear-gradient(180deg, rgba(26,29,34,0.9), rgba(15,17,20,0.9));
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:18px; padding:20px; text-align:center;
+    cursor:pointer; transition:border-color .2s, box-shadow .2s, transform .15s;
+    position:relative;
+  }
+  .candidate-card:hover{transform:translateY(-2px);}
+  .candidate-card.selected{
+    border-color:var(--electric-blue);
+    box-shadow:0 0 0 1px var(--electric-blue), var(--glow);
+  }
+  .candidate-tag{
+    font-size:11px; letter-spacing:3px; color:var(--electric-blue);
+    font-weight:700; margin-bottom:12px;
+  }
+  .candidate-photo{
+    width:120px; height:120px; border-radius:50%; object-fit:cover;
+    margin:0 auto 14px; display:block;
+    border:2px solid rgba(255,255,255,0.12);
+    background:var(--storm-grey-light);
+  }
+  .candidate-photo.placeholder{
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Bebas Neue',sans-serif; font-size:34px; color:var(--electric-blue);
+  }
+  .candidate-name{
+    font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:1px;
+  }
+  .select-btn{
+    margin-top:16px; padding:10px 24px;
+    background:transparent; border:1px solid var(--electric-blue); color:var(--electric-blue);
+    border-radius:8px; font-weight:800; font-size:12px; letter-spacing:2px; cursor:pointer;
+    transition:background .15s, color .15s;
+  }
+  .candidate-card.selected .select-btn{background:var(--electric-blue); color:#04121a;}
+
+  /* ---------- MODAL ---------- */
+  .modal-backdrop{
+    position:fixed; inset:0; z-index:10; background:rgba(4,5,7,0.7);
+    display:none; align-items:center; justify-content:center; padding:20px;
+    backdrop-filter:blur(3px);
+  }
+  .modal-backdrop.show{display:flex;}
+  .modal{
+    background:var(--storm-grey); border:1px solid rgba(255,255,255,0.12);
+    border-radius:16px; padding:28px; max-width:400px; width:100%;
+    text-align:center;
+  }
+  .modal h3{font-family:'Bebas Neue',sans-serif; font-size:22px; margin:0 0 10px; letter-spacing:1px;}
+  .modal p{color:var(--silver); font-size:14px; line-height:1.6;}
+
+  /* ---------- SUCCESS / CLOSED ---------- */
+  .center-screen{
+    text-align:center; display:flex; flex-direction:column; align-items:center;
+    padding-top:40px;
+  }
+  .bolt-icon{margin-bottom:18px;}
+  .final-title{
+    font-family:'Bebas Neue',sans-serif; font-size:clamp(30px,6vw,42px);
+    letter-spacing:1px; margin:0 0 12px;
+  }
+  .final-sub{color:var(--silver); font-size:15px; max-width:380px; line-height:1.6; margin:0 auto;}
+  .sign-off{
+    margin-top:40px; font-family:'Bebas Neue',sans-serif; letter-spacing:2px;
+    color:var(--electric-blue); font-size:14px;
+  }
+  .sign-off .small{display:block; color:var(--silver); font-size:11px; letter-spacing:3px; margin-top:6px; font-family:'Montserrat',sans-serif; font-weight:600;}
+
+  .hidden{display:none !important;}
+
+  @media (max-width:480px){
+    .panel{padding:24px 18px;}
+    .btn-row{flex-direction:column;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .panel{animation:none;}
+  }
+</style>
+</head>
+<body>
+
+<div id="atmosphere"></div>
+<canvas id="fx"></canvas>
+<div id="flash"></div>
+
+<div class="stage">
+
+  <div class="brandmark">
+    <div class="logo-ring" id="logoRing">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M13 2L4 14H11L10 22L20 9H13L13 2Z" stroke="#00AEEF" stroke-width="1.4" stroke-linejoin="round" fill="rgba(0,174,239,0.15)"/>
+      </svg>
+    </div>
+    <div class="eyebrow">⚡ THUNDERSOUL</div>
+    <div class="house-name">HOUSE OF THUNDERSOUL</div>
+    <div class="election-name" id="electionTitle">DEPUTY HOUSE REPRESENTATIVE ELECTION 2026</div>
+  </div>
+
+  <div class="progress hidden" id="progressBar">
+    <div class="step" data-step="1"><span class="num">1</span><span>VERIFY</span></div>
+    <div class="sep"></div>
+    <div class="step" data-step="2"><span class="num">2</span><span>SELECT</span></div>
+    <div class="sep"></div>
+    <div class="step" data-step="3"><span class="num">3</span><span>CONFIRM</span></div>
+  </div>
+
+  <!-- SCREEN: WELCOME -->
+  <div class="panel" id="screen-welcome">
+    <p class="tagline" style="margin-top:0; text-align:center;">"Every vote represents the voice of ThunderSoul."</p>
+    <button class="btn" id="btnEnter">ENTER ELECTION</button>
+  </div>
+
+  <!-- SCREEN: ELECTION CLOSED -->
+  <div class="panel hidden center-screen" id="screen-closed" style="text-align:center;">
+    <h2>ELECTION CLOSED</h2>
+    <p class="sub">Voting for the Deputy House Representative has now concluded.</p>
+  </div>
+
+  <!-- SCREEN: EMAIL -->
+  <div class="panel hidden" id="screen-email">
+    <h2>Verify Your ThunderSoul Membership</h2>
+    <p class="sub">Enter your official university email address to begin.</p>
+    <label for="emailInput">University Email</label>
+    <input type="email" id="emailInput" placeholder="yourname.25@nlumeg.ac.in" autocomplete="email">
+    <div class="msg" id="emailMsg"></div>
+    <button class="btn" id="btnSendOtp">SEND VERIFICATION CODE</button>
+  </div>
+
+  <!-- SCREEN: OTP -->
+  <div class="panel hidden" id="screen-otp">
+    <h2>Enter Verification Code</h2>
+    <p class="sub" id="otpSubtext">We've sent a 6-digit code to your university email. It expires in a few minutes.</p>
+    <label for="otpInput">Verification Code</label>
+    <input type="text" id="otpInput" class="otp-input" maxlength="6" inputmode="numeric" placeholder="______" autocomplete="one-time-code">
+    <div class="msg" id="otpMsg"></div>
+    <button class="btn" id="btnVerifyOtp">VERIFY &amp; CONTINUE</button>
+    <div class="helper-row">
+      <span id="resendTimer"></span>
+      <button class="ghost" id="btnResend" style="background:none;border:none;color:var(--electric-blue);cursor:pointer;font-size:12px;letter-spacing:1px;text-decoration:underline;">Resend Code</button>
+    </div>
+  </div>
+
+  <!-- SCREEN: VOTING -->
+  <div class="hidden" id="screen-vote" style="width:100%; display:flex; flex-direction:column; align-items:center;">
+    <div class="welcome-line">
+      <h2 id="welcomeName">Welcome</h2>
+      <p>Your ThunderSoul membership has been verified.</p>
+    </div>
+    <div class="candidates" id="candidateList"></div>
+    <div class="msg" id="voteMsg" style="max-width:480px; width:100%;"></div>
+    <button class="btn" id="btnProceed" style="max-width:480px;" disabled>CONFIRM YOUR VOTE</button>
+  </div>
+
+  <!-- SCREEN: ALREADY VOTED -->
+  <div class="panel hidden center-screen" id="screen-alreadyvoted">
+    <h2>Vote Already Recorded</h2>
+    <p class="sub">Our records show that your vote has already been submitted. Each ThunderSoul member is permitted to vote only once.</p>
+  </div>
+
+  <!-- SCREEN: SUCCESS -->
+  <div class="hidden center-screen" id="screen-success">
+    <svg class="bolt-icon" width="56" height="56" viewBox="0 0 24 24" fill="none">
+      <path d="M13 2L4 14H11L10 22L20 9H13L13 2Z" stroke="#00AEEF" stroke-width="1.6" stroke-linejoin="round" fill="rgba(0,174,239,0.2)"/>
+    </svg>
+    <div class="final-title">VOTE RECORDED</div>
+    <p class="final-sub">Your vote has been successfully recorded.<br>Thank you for participating in the House of ThunderSoul election.</p>
+    <div class="sign-off">THUNDERSOUL<span class="small">ONE HOUSE. ONE VOICE. ONE FUTURE.</span></div>
+  </div>
+
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="modal-backdrop" id="confirmModal">
+  <div class="modal">
+    <h3>CONFIRM YOUR VOTE</h3>
+    <p>You are about to cast your vote for<br><strong id="modalCandidateName" style="color:var(--electric-blue); font-size:16px;"></strong></p>
+    <p>You can vote only once. Please review your selection carefully before submitting.</p>
+    <div class="btn-row">
+      <button class="btn secondary" id="btnCancelConfirm">CANCEL</button>
+      <button class="btn" id="btnCastVote">CAST MY VOTE</button>
+    </div>
+  </div>
+</div>
+
+<!-- FINAL "ARE YOU SURE" MODAL -->
+<div class="modal-backdrop" id="finalModal">
+  <div class="modal">
+    <h3>Are you sure?</h3>
+    <p>This vote cannot be changed after submission.</p>
+    <div class="btn-row">
+      <button class="btn secondary" id="btnFinalCancel">CANCEL</button>
+      <button class="btn" id="btnFinalConfirm"><span id="finalConfirmLabel">CONFIRM VOTE</span></button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   STATE — kept only in memory for this page load. Nothing
+   here is trusted by the server; every sensitive check is
+   re-run in Code.gs regardless of what these variables say.
+   ========================================================= */
+const state = {
+  email: '',
+  sessionToken: '',
+  selectedCandidateId: null,
+  candidates: [],
+  electionOpen: false
+};
+
+/* ---------- SCREEN HELPERS ---------- */
+function showScreen(id){
+  ['screen-welcome','screen-closed','screen-email','screen-otp','screen-vote','screen-alreadyvoted','screen-success']
+    .forEach(s => document.getElementById(s).classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+}
+function setProgress(step){
+  const bar = document.getElementById('progressBar');
+  if (step === 0){ bar.classList.add('hidden'); return; }
+  bar.classList.remove('hidden');
+  bar.querySelectorAll('.step').forEach(el=>{
+    el.classList.toggle('active', Number(el.dataset.step) <= step);
+  });
+}
+function setMsg(elId, text, type){
+  const el = document.getElementById(elId);
+  el.textContent = text;
+  el.className = 'msg ' + (type || 'error');
+}
+function clearMsg(elId){
+  const el = document.getElementById(elId);
+  el.textContent = '';
+  el.className = 'msg';
+}
+function setBusy(btn, busy, label){
+  if (busy){
+    btn.dataset.label = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner"></span>' + (label || 'Please wait…');
+    btn.disabled = true;
+  } else {
+    btn.innerHTML = btn.dataset.label || label;
+    btn.disabled = false;
+  }
+}
+
+/* ---------- INITIAL LOAD ---------- */
+window.addEventListener('load', () => {
+  google.script.run.withSuccessHandler(onElectionInfo).withFailureHandler(onServerError).getElectionInfo();
+  initFx();
+});
+
+function onElectionInfo(info){
+  document.getElementById('electionTitle').textContent = info.title;
+  state.electionOpen = info.status === 'OPEN';
+  state.candidates = info.candidates;
+
+  if (info.logoUrl){
+    const ring = document.getElementById('logoRing');
+    ring.innerHTML = '<img src="' + info.logoUrl + '" alt="House of ThunderSoul logo">';
+  }
+
+  if (!state.electionOpen){
+    showScreen('screen-closed');
+    setProgress(0);
+  }
+}
+
+function onServerError(){
+  setMsg('emailMsg', 'Something went wrong while processing your request. Please try again.', 'error');
+}
+
+/* ---------- STEP: ENTER ---------- */
+document.getElementById('btnEnter').addEventListener('click', () => {
+  if (!state.electionOpen){ showScreen('screen-closed'); return; }
+  showScreen('screen-email');
+  setProgress(1);
+});
+
+/* ---------- STEP: SEND OTP ---------- */
+document.getElementById('btnSendOtp').addEventListener('click', () => {
+  const email = document.getElementById('emailInput').value.trim();
+  clearMsg('emailMsg');
+  if (!email){
+    setMsg('emailMsg', 'Please enter your university email address.', 'error');
+    return;
+  }
+  const btn = document.getElementById('btnSendOtp');
+  setBusy(btn, true, 'Sending…');
+  google.script.run
+    .withSuccessHandler(res => { setBusy(btn, false, 'SEND VERIFICATION CODE'); onOtpRequested(res, email); })
+    .withFailureHandler(() => { setBusy(btn, false, 'SEND VERIFICATION CODE'); setMsg('emailMsg', 'Something went wrong while processing your request. Please try again.', 'error'); })
+    .requestOtp(email);
+});
+
+let resendCooldownInterval = null;
+function startResendCooldown(seconds){
+  const resendBtn = document.getElementById('btnResend');
+  const timerEl = document.getElementById('resendTimer');
+  resendBtn.disabled = true;
+  resendBtn.style.opacity = '0.4';
+  let remaining = seconds;
+  clearInterval(resendCooldownInterval);
+  timerEl.textContent = 'Resend available in ' + remaining + 's';
+  resendCooldownInterval = setInterval(() => {
+    remaining--;
+    if (remaining <= 0){
+      clearInterval(resendCooldownInterval);
+      timerEl.textContent = '';
+      resendBtn.disabled = false;
+      resendBtn.style.opacity = '1';
+    } else {
+      timerEl.textContent = 'Resend available in ' + remaining + 's';
+    }
+  }, 1000);
+}
+
+function onOtpRequested(res, email){
+  if (!res.ok){
+    if (res.code === 'ELECTION_CLOSED'){ showScreen('screen-closed'); setProgress(0); return; }
+    if (res.code === 'ALREADY_VOTED'){ showScreen('screen-alreadyvoted'); setProgress(0); return; }
+    if (res.code === 'COOLDOWN'){
+      setMsg('emailMsg', res.message, 'error');
+      startResendCooldown(res.retryAfterSeconds || 45);
+      state.email = email;
+      showScreen('screen-otp');
+      setProgress(1);
+      return;
+    }
+    setMsg('emailMsg', res.message, 'error');
+    return;
+  }
+  state.email = email;
+  document.getElementById('otpSubtext').textContent =
+    'We\'ve sent a 6-digit code to ' + email + '. It expires in ' + (res.expiryMinutes || 5) + ' minutes.';
+  document.getElementById('otpInput').value = '';
+  clearMsg('otpMsg');
+  showScreen('screen-otp');
+  setProgress(1);
+  startResendCooldown(45);
+});
+
+document.getElementById('btnResend').addEventListener('click', () => {
+  clearMsg('otpMsg');
+  const btn = document.getElementById('btnResend');
+  btn.disabled = true;
+  google.script.run
+    .withSuccessHandler(res => onOtpRequested(res, state.email))
+    .withFailureHandler(() => { setMsg('otpMsg', 'Something went wrong while processing your request. Please try again.', 'error'); btn.disabled = false; })
+    .requestOtp(state.email);
+});
+
+/* ---------- STEP: VERIFY OTP ---------- */
+document.getElementById('btnVerifyOtp').addEventListener('click', () => {
+  const code = document.getElementById('otpInput').value.trim();
+  clearMsg('otpMsg');
+  if (!code){
+    setMsg('otpMsg', 'Please enter the 6-digit verification code.', 'error');
+    return;
+  }
+  const btn = document.getElementById('btnVerifyOtp');
+  setBusy(btn, true, 'Verifying…');
+  google.script.run
+    .withSuccessHandler(res => { setBusy(btn, false, 'VERIFY & CONTINUE'); onOtpVerified(res); })
+    .withFailureHandler(() => { setBusy(btn, false, 'VERIFY & CONTINUE'); setMsg('otpMsg', 'Something went wrong while processing your request. Please try again.', 'error'); })
+    .verifyOtp(state.email, code);
+});
+
+function onOtpVerified(res){
+  if (!res.ok){
+    if (res.code === 'ELECTION_CLOSED'){ showScreen('screen-closed'); setProgress(0); return; }
+    setMsg('otpMsg', res.message, 'error');
+    return;
+  }
+  state.sessionToken = res.sessionToken;
+  clearInterval(resendCooldownInterval);
+
+  // Double-check vote status server-side before showing candidates.
+  google.script.run
+    .withSuccessHandler(statusRes => {
+      if (statusRes.ok && statusRes.hasVoted){
+        showScreen('screen-alreadyvoted');
+        setProgress(0);
+        return;
+      }
+      document.getElementById('welcomeName').textContent = 'Welcome, ' + (res.firstName || '');
+      renderCandidates();
+      showScreen('screen-vote');
+      setProgress(2);
+    })
+    .withFailureHandler(() => {
+      document.getElementById('welcomeName').textContent = 'Welcome, ' + (res.firstName || '');
+      renderCandidates();
+      showScreen('screen-vote');
+      setProgress(2);
+    })
+    .checkVoteStatus(state.email);
+}
+
+/* ---------- CANDIDATES ---------- */
+function renderCandidates(){
+  const wrap = document.getElementById('candidateList');
+  wrap.innerHTML = '';
+  state.candidates.forEach((c, idx) => {
+    const card = document.createElement('div');
+    card.className = 'candidate-card';
+    card.dataset.id = c.id;
+
+    const photoHtml = c.imageUrl
+      ? '<img class="candidate-photo" src="' + c.imageUrl + '" alt="' + c.name + '">'
+      : '<div class="candidate-photo placeholder">' + c.name.charAt(0) + '</div>';
+
+    card.innerHTML =
+      '<div class="candidate-tag">CANDIDATE ' + String(idx + 1).padStart(2, '0') + '</div>' +
+      photoHtml +
+      '<div class="candidate-name">' + c.name.toUpperCase() + '</div>' +
+      '<button type="button" class="select-btn">SELECT</button>';
+
+    card.addEventListener('click', () => selectCandidate(c.id));
+    wrap.appendChild(card);
+  });
+}
+
+function selectCandidate(id){
+  state.selectedCandidateId = id;
+  document.querySelectorAll('.candidate-card').forEach(el => {
+    el.classList.toggle('selected', el.dataset.id === id);
+  });
+  document.getElementById('btnProceed').disabled = false;
+  clearMsg('voteMsg');
+}
+
+document.getElementById('btnProceed').addEventListener('click', () => {
+  if (!state.selectedCandidateId) return;
+  const candidate = state.candidates.find(c => c.id === state.selectedCandidateId);
+  document.getElementById('modalCandidateName').textContent = candidate.name.toUpperCase();
+  document.getElementById('confirmModal').classList.add('show');
+  setProgress(3);
+});
+
+/* ---------- CONFIRM MODAL ---------- */
+document.getElementById('btnCancelConfirm').addEventListener('click', () => {
+  document.getElementById('confirmModal').classList.remove('show');
+  setProgress(2);
+});
+
+document.getElementById('btnCastVote').addEventListener('click', () => {
+  document.getElementById('confirmModal').classList.remove('show');
+  document.getElementById('finalModal').classList.add('show');
+});
+
+/* ---------- FINAL "ARE YOU SURE" MODAL ---------- */
+document.getElementById('btnFinalCancel').addEventListener('click', () => {
+  document.getElementById('finalModal').classList.remove('show');
+});
+
+document.getElementById('btnFinalConfirm').addEventListener('click', () => {
+  const btn = document.getElementById('btnFinalConfirm');
+  const label = document.getElementById('finalConfirmLabel');
+  btn.disabled = true;
+  label.innerHTML = '<span class="spinner"></span>Submitting…';
+
+  google.script.run
+    .withSuccessHandler(res => {
+      btn.disabled = false;
+      label.textContent = 'CONFIRM VOTE';
+      document.getElementById('finalModal').classList.remove('show');
+      onVoteSubmitted(res);
+    })
+    .withFailureHandler(() => {
+      btn.disabled = false;
+      label.textContent = 'CONFIRM VOTE';
+      document.getElementById('finalModal').classList.remove('show');
+      setMsg('voteMsg', 'Something went wrong while processing your request. Please try again.', 'error');
+    })
+    .submitVote(state.email, state.sessionToken, state.selectedCandidateId);
+});
+
+function onVoteSubmitted(res){
+  if (!res.ok){
+    if (res.code === 'ALREADY_VOTED'){ showScreen('screen-alreadyvoted'); setProgress(0); return; }
+    if (res.code === 'ELECTION_CLOSED'){ showScreen('screen-closed'); setProgress(0); return; }
+    if (res.code === 'SESSION_EXPIRED' || res.code === 'NOT_VERIFIED'){
+      showScreen('screen-email');
+      setProgress(1);
+      setMsg('emailMsg', 'Your verification session expired. Please verify your email again.', 'error');
+      return;
+    }
+    setMsg('voteMsg', res.message, 'error');
+    return;
+  }
+  document.querySelectorAll('.stage > .panel, .stage > #screen-vote, .stage > .progress').forEach(()=>{});
+  setProgress(0);
+  document.getElementById('screen-success').classList.remove('hidden');
+  ['screen-welcome','screen-closed','screen-email','screen-otp','screen-vote','screen-alreadyvoted']
+    .forEach(s => document.getElementById(s).classList.add('hidden'));
+  triggerElectricPulse();
+  // Lock the page against re-voting via back/refresh.
+  state.sessionToken = '';
+  window.onbeforeunload = null;
+}
+
+/* =========================================================
+   CINEMATIC STORM EFFECT — canvas rain + occasional lightning.
+   Reduced automatically on small screens / reduced-motion.
+   ========================================================= */
+function initFx(){
+  const canvas = document.getElementById('fx');
+  const ctx = canvas.getContext('2d');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let isMobile = window.innerWidth < 640;
+
+  function resize(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    isMobile = window.innerWidth < 640;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  if (reduceMotion) return;
+
+  const dropCount = isMobile ? 35 : 90;
+  const drops = Array.from({length: dropCount}, () => makeDrop());
+  function makeDrop(){
+    return {
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      len: 10 + Math.random() * 18,
+      speed: 4 + Math.random() * 6,
+      opacity: 0.06 + Math.random() * 0.12
+    };
+  }
+
+  function drawRain(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = '#00AEEF';
+    ctx.lineWidth = 1;
+    drops.forEach(d => {
+      ctx.globalAlpha = d.opacity;
+      ctx.beginPath();
+      ctx.moveTo(d.x, d.y);
+      ctx.lineTo(d.x, d.y + d.len);
+      ctx.stroke();
+      d.y += d.speed;
+      d.x -= d.speed * 0.15;
+      if (d.y > canvas.height){ d.y = -20; d.x = Math.random() * canvas.width; }
+    });
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(drawRain);
+  }
+  drawRain();
+
+  function scheduleFlash(){
+    const delay = 6000 + Math.random() * 12000;
+    setTimeout(() => {
+      flashOnce();
+      scheduleFlash();
+    }, delay);
+  }
+  scheduleFlash();
+}
+
+function flashOnce(){
+  const flash = document.getElementById('flash');
+  flash.style.transition = 'none';
+  flash.style.opacity = '0.35';
+  requestAnimationFrame(() => {
+    flash.style.transition = 'opacity 0.6s ease-out';
+    flash.style.opacity = '0';
+  });
+}
+
+function triggerElectricPulse(){
+  flashOnce();
+  setTimeout(flashOnce, 220);
+}
+</script>
+</body>
+</html>
